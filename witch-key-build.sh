@@ -2,7 +2,7 @@
 
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TMUX_KEYMAPS="$CURRENT_DIR/tmux-keymaps.txt"
-WITCH_KEY_SH="$CURRENT_DIR/witch-key.sh"
+WITCH_KEY_SH="$CURRENT_DIR/witch-key-menus.sh"
 
 # Write the output of the tmux list-keys command to a file
 tmux list-keys >$TMUX_KEYMAPS
