@@ -17,7 +17,7 @@ echo "    tmux display-menu -T \"Witch-Key - Windows\" -x C -y S \\" >>$WITCH_KE
 
 # Define the commands to look for and their corresponding titles
 declare -A commands
-commands=(["next-window"]="Next Window" ["previous-window"]="Prev Window")
+commands=(["next-window"]="Next Window" ["previous-window"]="Previous Window" ["split-window -fh"]="Split Vertical")
 
 # Parse the tmux-keymaps.txt file
 while IFS= read -r line; do
