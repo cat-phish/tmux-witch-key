@@ -2,7 +2,7 @@
 
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TMUX_KEYMAPS="$CURRENT_DIR/tmux-keymaps.txt"
-WITCH_KEY_SH="$CURRENT_DIR/witch-key-menus.sh"
+WITCH_KEY_SH="$CURRENT_DIR/witch-key.sh"
 
 # Write the output of the tmux list-keys command to a file
 tmux list-keys >$TMUX_KEYMAPS
@@ -27,9 +27,9 @@ while IFS= read -r line; do
 		if [[ ${commands[$cmd]} ]]; then
 			title=${commands[$cmd]}
 			if [[ $line == *"-r"* ]]; then
-				echo "        \"$title\" $bind \"$cmd\" \\" >>$WITCH_KEY_SH
+				echo "        \"$title\" $bind $cmd \\" >>$WITCH_KEY_SH
 			else
-				echo "        \"$title\" $bind \"$cmd\" \\" >>$WITCH_KEY_SH
+				echo "        \"$title\" $bind $cmd \\" >>$WITCH_KEY_SH
 			fi
 		fi
 	fi
