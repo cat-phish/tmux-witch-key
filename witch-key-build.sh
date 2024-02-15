@@ -1,36 +1,43 @@
 #!/usr/bin/env bash
 
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TMUX_CONF="$HOME/.config/tmux/tmux.conf"
+TMUX_KEYMAPS="$CURRENT_DIR/tmux-keymaps.txt"
 WITCH_KEY_SH="$CURRENT_DIR/witch-key.sh"
+
+# Write the output of the tmux list-keys command to a file
+tmux list-keys >$TMUX_KEYMAPS
 
 # Start building the new witch-key.sh script
 echo "#!/usr/bin/env bash" >$WITCH_KEY_SH
 echo "" >>$WITCH_KEY_SH
 echo "CURRENT_DIR=\"$(cd \"$(dirname \"\${BASH_SOURCE[0]}\")\" && pwd)\"" >>$WITCH_KEY_SH
 echo "" >>$WITCH_KEY_SH
-echo "tmux display-menu -T \"Witch-Key\" -x C -y S \\" >>$WITCH_KEY_SH
+echo "show_window_menu() {" >>$WITCH_KEY_SH
+echo "    tmux display-menu -T \"Witch-Key - Windows\" -x C -y S \\" >>$WITCH_KEY_SH
 
-# Parse the tmux.conf file
-prev_line=""
+# Define the commands to look for and their corresponding titles
+declare -A commands
+commands=(["next-window"]="Next Window" ["previous-window"]="Prev Window")
+
+# Parse the tmux-keymaps.txt file
 while IFS= read -r line; do
-	if [[ $prev_line == *"#@witch-key add-custom"* ]]; then
-		desc=$(echo $prev_line | sed -n 's/.*desc="\([^"]*\)".*/\1/p')
-		bind=$(echo $prev_line | sed -n 's/.*bind="\([^"]*\)".*/\1/p')
-		cmd=$(echo $prev_line | sed -n 's/.*cmd="\([^"]*\)".*/\1/p')
-		echo "\"$bind: $desc\" \"send-keys '$cmd'\" \\" >>$WITCH_KEY_SH
-	elif [[ $prev_line == *"#@witch-key add"* ]]; then
-		bind=$(echo $line | awk "{print $2}")
-		cmd=$(echo $line | cut -d' ' -f3-)
-		echo "\"$bind: $desc\" \"send-keys '$cmd'\" \\" >>$WITCH_KEY_SH
-	elif [[ $prev_line == *"#@witch-key end-group"* ]]; then
-		echo "\"-: ----------------\" \"\" \\" >>$WITCH_KEY_SH
+	if [[ $line == *"-T prefix"* ]]; then
+		bind=$(echo $line | awk '{print $5}')
+		cmd=$(echo $line | awk '{print $6}')
+		if [[ ${commands[$cmd]} ]]; then
+			title=${commands[$cmd]}
+			if [[ $line == *"-r"* ]]; then
+				echo "        \"$title\" $bind \"$cmd\" \\" >>$WITCH_KEY_SH
+			else
+				echo "        \"$title\" $bind \"$cmd\" \\" >>$WITCH_KEY_SH
+			fi
+		fi
 	fi
-	prev_line=$line
-done <$TMUX_CONF
+done <$TMUX_KEYMAPS
 
-# Add the default menu item
-echo "\"B: Build Menu\" \"run-shell '\$CURRENT_DIR/witch-key-build.sh'\"" >>$WITCH_KEY_SH
+# Add the close menu option
+echo "        \"Close Menu\" Escape \"\"" >>$WITCH_KEY_SH
+echo "}" >>$WITCH_KEY_SH
 
 # Make the new witch-key.sh script executable
 chmod +x $WITCH_KEY_SH

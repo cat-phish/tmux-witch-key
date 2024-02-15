@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CURRENT_DIR=""
 
-show_menu_session() {
-   tmux display-menu -T "Witch-Key Session" -x C -y S \
-      "" \
-      "Build Menu" B "run -b 'source \"$CURRENT_DIR/witch-key-build.sh\"'" \
-      "Close Menu" Escape ""
+show_window_menu() {
+	tmux display-menu -T "Witch-Key - Windows" -x C -y S \
+		"Next Window" \' "next-window" \
+		"Prev Window" \; "previous-window" \
+		"Close Menu" Escape ""
 }
