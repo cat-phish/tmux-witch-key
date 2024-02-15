@@ -8,3 +8,5 @@ show_window_menu() {
 		"Prev Window" \; previous-window \
 		"Close Menu" Escape ""
 }
+
+show_window_menu
