@@ -27,9 +27,9 @@ while IFS= read -r line; do
 		if [[ ${commands[$cmd]} ]]; then
 			title=${commands[$cmd]}
 			if [[ $line == *"-r"* ]]; then
-				echo "        \"$title\" $bind $cmd \\" >>$WITCH_KEY_MENUS_SH
+				echo "        \"$title\" \"$bind\" \"$cmd\" \\" >>$WITCH_KEY_MENUS_SH
 			else
-				echo "        \"$title\" $bind $cmd \\" >>$WITCH_KEY_MENUS_SH
+				echo "        \"$title\" \"$bind\" \"$cmd\" \\" >>$WITCH_KEY_MENUS_SH
 			fi
 		fi
 	fi
