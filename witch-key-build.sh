@@ -17,21 +17,20 @@ echo "    tmux display-menu -T \"Witch-Key - Windows\" -x C -y S \\" >>$WITCH_KE
 
 # Define the commands to look for and their corresponding titles
 declare -A commands
-commands=(["next-window"]="Next Window" ["previous-window"]="Previous Window" ["split-window -fh"]="Split Vertical")
+commands=(["next-window"]="Next Window" ["previous-window"]="Prev Window" ["split-window -fh"]="Split Window")
 
 # Parse the tmux-keymaps.txt file
 while IFS= read -r line; do
 	if [[ $line == *"-T prefix"* ]]; then
 		bind=$(echo $line | awk '{print $5}')
-		cmd=$(echo $line | awk '{print $6}')
-		if [[ ${commands[$cmd]} ]]; then
-			title=${commands[$cmd]}
-			if [[ $line == *"-r"* ]]; then
-				echo "        \"$title\" \"$bind\" \"$cmd\" \\" >>$WITCH_KEY_MENUS_SH
-			else
-				echo "        \"$title\" \"$bind\" \"$cmd\" \\" >>$WITCH_KEY_MENUS_SH
+		cmd=$(echo $line | awk '{for(i=6;i<=NF;i++) printf $i" "; print ""}')
+		for key in "${!commands[@]}"; do
+			if [[ $cmd == $key* ]]; then
+				title=${commands[$key]}
+				echo "        \"$title\" $bind $cmd \\" >>$WITCH_KEY_MENUS_SH
+				break
 			fi
-		fi
+		done
 	fi
 done <$TMUX_KEYMAPS
 
