@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TMUX_CONF="$HOME/.tmux.conf"
+TMUX_CONF="$HOME/.config/tmux/tmux.conf"
 WITCH_KEY_SH="$CURRENT_DIR/witch-key.sh"
 
 # Start building the new witch-key.sh script
@@ -9,7 +9,7 @@ echo "#!/usr/bin/env bash" >$WITCH_KEY_SH
 echo "" >>$WITCH_KEY_SH
 echo "CURRENT_DIR=\"$(cd \"$(dirname \"\${BASH_SOURCE[0]}\")\" && pwd)\"" >>$WITCH_KEY_SH
 echo "" >>$WITCH_KEY_SH
-echo "tmux display-menu -T \"Witch-Key\" -x C -y L \\" >>$WITCH_KEY_SH
+echo "tmux display-menu -T \"Witch-Key\" -x C -y S \\" >>$WITCH_KEY_SH
 
 # Parse the tmux.conf file
 prev_line=""
