@@ -52,7 +52,8 @@ for window_type in "${window_types[@]}"; do
 			# Iterate over the commands we're looking for
 			for key in "${!commands[@]}"; do
 				# Check if the command starts with the key
-				if [[ $cmd == $key" "* ]]; then # Get the title for the command
+				if [[ $cmd == $key || $cmd == $key" "* ]]; then
+					# Get the title for the command
 					title=${commands[$key]}
 					# Handle special cases for the key binding
 					if [[ $bind == "\'" ]]; then
