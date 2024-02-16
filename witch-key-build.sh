@@ -10,7 +10,7 @@ tmux list-keys >$TMUX_KEYMAPS
 # Start building the new witch-key-menus.sh script
 echo "#!/usr/bin/env bash" >$WITCH_KEY_MENUS_SH
 echo "" >>$WITCH_KEY_MENUS_SH
-echo "CURRENT_DIR=\"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)\"" >>$WITCH_KEY_MENUS_SH
+echo "CURRENT_DIR=\"\$(cd \"\$(dirname \"\${BASH_SOURCE[0]}\")\" && pwd)\"" >>$WITCH_KEY_MENUS_SH
 echo "" >>$WITCH_KEY_MENUS_SH
 
 # Declare an array of the types of windows we want to create
@@ -68,7 +68,8 @@ for window_type in "${window_types[@]}"; do
 	echo "show_${window_type}_menu() {" >>$WITCH_KEY_MENUS_SH
 	echo "    tmux display-menu -T \"Witch-Key - ${window_type^}\" -x C -y S \\" >>$WITCH_KEY_MENUS_SH
 
-	echo "        \"Main Menu\" BackSpace '\"$CURRENT_DIR/witch-key.sh\"' \\" >>$WITCH_KEY_MENUS_SH
+	# Add the main menu entry
+	echo "        \"Main Menu\" BackSpace '\"\$CURRENT_DIR/witch-key.sh\"' \\" >>$WITCH_KEY_MENUS_SH
 
 	# Parse the tmux-keymaps.txt file
 	while IFS= read -r line; do
