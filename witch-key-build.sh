@@ -17,11 +17,18 @@ echo "" >>$WITCH_KEY_MENUS_SH
 declare -a window_types=("session" "window" "pane")
 
 # Define the commands to look for and their corresponding titles for each window type
-declare -A session_commands
-session_commands=(["detach-client"]="Detach" ["refresh-client"]="Refresh")
+declare -A session_commands=(
+	["detach-client"]="Detach"
+	["refresh-client"]="Refresh"
+)
 
-declare -A window_commands
-window_commands=(["next-window"]="Next Window" ["previous-window"]="Prev Window" ["split-window -h"]="Split (H)" ["split-window -v"]="Split (V)")
+declare -A window_commands=(
+	["next-window"]="Next Window"
+	["previous-window"]="Prev Window"
+	["next-window -a"]="Next (Alert)"
+	["split-window -h"]="Split (H)"
+	["split-window -v"]="Split (V)"
+)
 
 declare -A pane_commands
 pane_commands=(["select-pane -U"]="Switch Up" ["select-pane -D"]="Switch Down")
