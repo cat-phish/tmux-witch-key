@@ -16,11 +16,9 @@ echo "" >>$WITCH_KEY_MENUS_SH
 # Declare an array of the types of windows we want to create
 declare -a window_types=("session" "window" "pane")
 
-# NOTE: for mapping commands. if the command should be mapped exactly do not include a space in the key, if the command has
-# possible arguments, include a space in the key and the command will be matched if it starts with the key followed by a space
-
 # Define the commands to look for and their corresponding titles for each window type
-declare -A session_commands=(
+declare -a session_commands=("new-session -s" "switch-client -n" "switch-client -p" "switch-client -l" "kill-session" "detach-client" "refresh-client")
+declare -A session_titles=(
 	["new-session -s"]="New Session"
 	["switch-client -n"]="Next Session"
 	["switch-client -p"]="Prev Session"
@@ -30,7 +28,8 @@ declare -A session_commands=(
 	["refresh-client"]="Refresh"
 )
 
-declare -A window_commands=(
+declare -a window_commands=("next-window" "previous-window" "next-window -a" "previous-window -a" "split-window -h" "split-window -v")
+declare -A window_titles=(
 	["next-window"]="Next Window"
 	["previous-window"]="Prev Window"
 	["next-window -a"]="Next (Alert)"
@@ -39,7 +38,8 @@ declare -A window_commands=(
 	["split-window -v"]="Split (V)"
 )
 
-declare -A pane_commands=(
+declare -a pane_commands=("select-pane -U" "select-pane -D" "select-pane -L" "select-pane -R" "swap-pane -U" "swap-pane -D" "swap-pane -L" "swap-pane -R" "resize-pane -U" "resize-pane -D" "resize-pane -L" "resize-pane -R" "resize-pane -U 5" "resize-pane -D 5" "resize-pane -L 5" "resize-pane -R 5" "kill-pane" "last-pane")
+declare -A pane_titles=(
 	["select-pane -U"]="Switch Up"
 	["select-pane -D"]="Switch Down"
 	["select-pane -L"]="Switch Left"
@@ -60,10 +60,14 @@ declare -A pane_commands=(
 	["last-pane"]="Last Pane"
 )
 
+# Store the tmux list-keys output in an array
+mapfile -t tmux_keys <$TMUX_KEYMAPS
+
 # Iterate over the types of windows we want to create
 for window_type in "${window_types[@]}"; do
-	# Get the commands for the current window type
+	# Get the commands and titles for the current window type
 	declare -n commands="${window_type}_commands"
+	declare -n titles="${window_type}_titles"
 
 	echo "show_${window_type}_menu() {" >>$WITCH_KEY_MENUS_SH
 	echo "    tmux display-menu -T \"Witch-Key - ${window_type^}\" -x C -y S \\" >>$WITCH_KEY_MENUS_SH
@@ -71,22 +75,22 @@ for window_type in "${window_types[@]}"; do
 	# Add the main menu entry
 	echo "        \"Main Menu\" \"BackSpace\" \"run -b 'source \\\"\$CURRENT_DIR/witch-key.sh\\\"'\" \\" >>$WITCH_KEY_MENUS_SH
 
-	# Parse the tmux-keymaps.txt file
-	while IFS= read -r line; do
-		# Check if the line is a prefix key binding
-		if [[ $line == *"-T prefix"* ]]; then
-			# Extract the key binding from the line
-			bind=$(echo $line | awk '{for(i=1;i<=NF;i++) if($i ~ /bind-key/) {print $(i+3); exit}}')
-			# Extract the command from the line
-			cmd=$(echo $line | awk '{for(i=1;i<=NF;i++) if($i ~ /bind-key/) {print substr($0, index($0,$(i+4))); exit}}')
-			# Iterate over the commands we're looking for
-			for key in "${!commands[@]}"; do
+	# Iterate over the commands we're looking for
+	for key in "${commands[@]}"; do
+		# Search for the corresponding line in the tmux list-keys output
+		for line in "${tmux_keys[@]}"; do
+			# Check if the line is a prefix key binding
+			if [[ $line == *"-T prefix"* ]]; then
+				# Extract the key binding from the line
+				bind=$(echo $line | awk '{for(i=1;i<=NF;i++) if($i ~ /bind-key/) {print $(i+3); exit}}')
+				# Extract the command from the line
+				cmd=$(echo $line | awk '{for(i=1;i<=NF;i++) if($i ~ /bind-key/) {print substr($0, index($0,$(i+4))); exit}}')
 				# If the key contains a space
 				if [[ $key == *" "* ]]; then
 					# Check if the command exactly matches the key or if the command starts with the key followed by a space
 					if [[ $cmd == $key || $cmd =~ ^$key[[:space:]] ]]; then
 						# Get the title for the command
-						title=${commands[$key]}
+						title=${titles[$key]}
 						# Handle special cases for the key binding
 						if [[ $bind == "\'" ]]; then
 							bind="'"
@@ -100,7 +104,7 @@ for window_type in "${window_types[@]}"; do
 					# If the key doesn't contain a space, check if the command exactly matches the key
 					if [[ $cmd == $key ]]; then
 						# Get the title for the command
-						title=${commands[$key]}
+						title=${titles[$key]}
 						# Handle special cases for the key binding
 						if [[ $bind == "\'" ]]; then
 							bind="'"
@@ -111,9 +115,9 @@ for window_type in "${window_types[@]}"; do
 						echo "        \"$title\" \"$bind\" '$cmd' \\" >>$WITCH_KEY_MENUS_SH
 					fi
 				fi
-			done
-		fi
-	done <$TMUX_KEYMAPS
+			fi
+		done
+	done
 
 	# Add the close menu option
 	echo "        \"Close Menu\" Escape \"\"" >>$WITCH_KEY_MENUS_SH
@@ -123,3 +127,6 @@ done
 
 # Make the new witch-key-menus.sh script executable
 chmod u+x $WITCH_KEY_MENUS_SH
+
+# Display a finished building message to the user
+tmux display-message "Witch-Key menus have finished building"
