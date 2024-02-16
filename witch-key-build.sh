@@ -27,7 +27,7 @@ declare -A window_commands=(
 	["previous-window"]="Prev Window"
 	["next-window -a"]="Next (Alert)"
 	["split-window -h"]="Split (H)"
-	["split-window -v"]="Split (V)"u
+	["split-window -v"]="Split (V)"
 )
 
 declare -A pane_commands
@@ -50,7 +50,8 @@ for window_type in "${window_types[@]}"; do
 			# Extract the command from the line
 			cmd=$(echo $line | awk '{for(i=1;i<=NF;i++) if($i ~ /bind-key/) {print substr($0, index($0,$(i+4))); exit}}')
 			# Iterate over the commands we're looking for
-			for key in "${!commands[@]}"; do
+			#for key in "${!commands[@]}"; do # Testing other option below
+			for key in $(echo "${!commands[@]}" | tr ' ' '\n' | awk '{ print length, $0 }' | sort -rn | cut -d' ' -f2-); do
 				# Check if the command starts with the key
 				if [[ $cmd == $key || $cmd == $key" "* ]]; then
 					# Get the title for the command
