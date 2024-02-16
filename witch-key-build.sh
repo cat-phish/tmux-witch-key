@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
 CURRENT_DIR="$(dirname "${BASH_SOURCE[0]}")"
-#!/usr/bin/env bash
-
-CURRENT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 TMUX_KEYMAPS="$CURRENT_DIR/tmux-keymaps.txt"
 WITCH_KEY_MENUS_SH="$CURRENT_DIR/witch-key-menus.sh"
 
@@ -24,20 +21,26 @@ commands=(["next-window"]="Next Window" ["previous-window"]="Prev Window" ["spli
 
 # Parse the tmux-keymaps.txt file
 while IFS= read -r line; do
+	# Check if the line is a prefix key binding
 	if [[ $line == *"-T prefix"* ]]; then
-		bind=$(echo $line | awk '{print $5}')
+		# Extract the key binding from the line
+		bind=$(echo $line | awk '{for(i=1;i<=NF;i++) if($i ~ /bind-key/) {print $(i+3); exit}}')
+		# Extract the command from the line
+		cmd=$(echo $line | awk '{for(i=1;i<=NF;i++) if($i ~ /bind-key/) {print substr($0, index($0,$(i+4))); exit}}')
+		# Iterate over the commands we're looking for
 		for key in "${!commands[@]}"; do
-			if [[ $line == *"$key"* ]]; then
+			# Check if the command starts with the key
+			if [[ $cmd == $key* ]]; then
+				# Get the title for the command
 				title=${commands[$key]}
+				# Handle special cases for the key binding
 				if [[ $bind == "\'" ]]; then
 					bind="'"
 				elif [[ $bind == "\"" ]]; then
 					bind="\""
 				fi
-				cmd=$(echo $line | awk -v key="$key" '$0 ~ key {for(i=6;i<=NF;i++) printf $i" "; print ""}')
-				if [[ $cmd == $key* ]]; then
-					echo "        \"$title\" \"$bind\" '$cmd' \\" >>$WITCH_KEY_MENUS_SH
-				fi
+				# Write the menu item to the script
+				echo "        \"$title\" \"$bind\" '$cmd' \\" >>$WITCH_KEY_MENUS_SH
 			fi
 		done
 	fi
