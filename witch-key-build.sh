@@ -68,4 +68,4 @@ for window_type in "${window_types[@]}"; do
 done
 
 # Make the new witch-key-menus.sh script executable
-chmod +x $WITCH_KEY_MENUS_SH
+chmod u+x $WITCH_KEY_MENUS_SH
