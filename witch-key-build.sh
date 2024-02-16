@@ -20,7 +20,22 @@ declare -a window_types=("session" "window" "pane")
 # possible arguments, include a space in the key and the command will be matched if it starts with the key followed by a space
 
 # Define the commands to look for and their corresponding titles for each window type
-declare -a session_commands=("new-session" "switch-client -n" "switch-client -p" "switch-client -l" "rename-session" "show-messages" "suspend-client" "lock-client" "kill-server" "kill-session" "kill-session -a" "list-sessions" "detach-client" "refresh-client")
+declare -a session_commands=(
+	"new-session"
+	"switch-client -n"
+	"switch-client -p"
+	"switch-client -l"
+	"rename-session"
+	"show-messages"
+	"suspend-client"
+	"lock-client"
+	"kill-server"
+	"kill-session"
+	"kill-session -a"
+	"list-sessions"
+	"detach-client"
+	"refresh-client"
+)
 declare -A session_titles=(
 	["new-session"]="New Session"
 	["switch-client -n"]="Next Session"
@@ -38,7 +53,33 @@ declare -A session_titles=(
 	["refresh-client"]="Refresh"
 )
 
-declare -a window_commands=("next-window" "previous-window" "next-window -a" "previous-window -a" "split-window -h" "split-window -v" "split-window -fh" "split-window -fv" "swap window -d -t -1" "swap window -d -t +1" "rotate-window" "rotate-window -D" "rotate-window -U" "rotate window -DZ" "rotate window -UZ" "new-window" "new-window -c" "rename-window" "list-windows" "respawn-window" "even-horizontal" "even-vertical" "main-horizontal" "main-vertical" "tiled")
+declare -a window_commands=(
+	"next-window"
+	"previous-window"
+	"next-window -a"
+	"previous-window -a"
+	"split-window -h"
+	"split-window -v"
+	"split-window -fh"
+	"split-window -fv"
+	"swap window -d -t -1"
+	"swap window -d -t +1"
+	"rotate-window"
+	"rotate-window -D"
+	"rotate-window -U"
+	"rotate window -DZ"
+	"rotate window -UZ"
+	"new-window"
+	"new-window -c"
+	"rename-window"
+	"list-windows"
+	"respawn-window"
+	"even-horizontal"
+	"even-vertical"
+	"main-horizontal"
+	"main-vertical"
+	"tiled"
+)
 declare -A window_titles=(
 	["next-window"]="Next Window"
 	["previous-window"]="Prev Window"
@@ -67,7 +108,33 @@ declare -A window_titles=(
 	["tiled"]="Tiled Layout"
 )
 
-declare -a pane_commands=("select-pane -U" "select-pane -D" "select-pane -L" "select-pane -R" "select-pane -UZ" "select-pane -DZ" "select-pane -LZ" "select-pane -RZ" "swap-pane -U" "swap-pane -D" "swap-pane -L" "swap-pane -R" "resize-pane -U" "resize-pane -D" "resize-pane -L" "resize-pane -R" "resize-pane -U 5" "resize-pane -D 5" "resize-pane -L 5" "resize-pane -R 5" "respawn-pane" "kill-pane" "last-pane" "break-pane" "break-pane -d")
+declare -a pane_commands=(
+	"select-pane -U"
+	"select-pane -D"
+	"select-pane -L"
+	"select-pane -R"
+	"select-pane -UZ"
+	"select-pane -DZ"
+	"select-pane -LZ"
+	"select-pane -RZ"
+	"swap-pane -U"
+	"swap-pane -D"
+	"swap-pane -L"
+	"swap-pane -R"
+	"resize-pane -U"
+	"resize-pane -D"
+	"resize-pane -L"
+	"resize-pane -R"
+	"resize-pane -U 5"
+	"resize-pane -D 5"
+	"resize-pane -L 5"
+	"resize-pane -R 5"
+	"respawn-pane"
+	"kill-pane"
+	"last-pane"
+	"break-pane"
+	"break-pane -d"
+)
 declare -A pane_titles=(
 	["select-pane -U"]="Switch Up"
 	["select-pane -D"]="Switch Down"
