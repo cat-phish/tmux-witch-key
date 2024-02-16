@@ -26,6 +26,11 @@ while IFS= read -r line; do
 		cmd=$(echo $line | awk '{print $6}')
 		if [[ ${commands[$cmd]} ]]; then
 			title=${commands[$cmd]}
+			if [[ $bind == "\'" ]]; then
+				bind="'"
+			elif [[ $bind == "\"" ]]; then
+				bind="\""
+			fi
 			if [[ $line == *"-r"* ]]; then
 				echo "        \"$title\" \"$bind\" \"$cmd\" \\" >>$WITCH_KEY_MENUS_SH
 			else
