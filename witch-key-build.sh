@@ -16,8 +16,16 @@ echo "" >>$WITCH_KEY_MENUS_SH
 # Declare an array of the types of windows we want to create
 declare -a window_types=("session" "window" "pane")
 
+# NOTE: for mapping commands. if the command should be mapped exactly do not include a space in the key, if the command has
+# possible arguments, include a space in the key and the command will be matched if it starts with the key followed by a space
+
 # Define the commands to look for and their corresponding titles for each window type
 declare -A session_commands=(
+	["new-session -s"]="New Session"
+	["switch-client -n"]="Next Session"
+	["switch-client -p"]="Prev Session"
+	["switch-client -l"]="Last Session"
+	["kill-session"]="Kill Session"
 	["detach-client"]="Detach"
 	["refresh-client"]="Refresh"
 )
@@ -26,12 +34,31 @@ declare -A window_commands=(
 	["next-window"]="Next Window"
 	["previous-window"]="Prev Window"
 	["next-window -a"]="Next (Alert)"
+	["previous-window -a"]="Prev (Alert)"
 	["split-window -h"]="Split (H)"
 	["split-window -v"]="Split (V)"
 )
 
-declare -A pane_commands
-pane_commands=(["select-pane -U"]="Switch Up" ["select-pane -D"]="Switch Down")
+declare -A pane_commands=(
+	["select-pane -U"]="Switch Up"
+	["select-pane -D"]="Switch Down"
+	["select-pane -L"]="Switch Left"
+	["select-pane -R"]="Switch Right"
+	["swap-pane -U"]="Swap Up"
+	["swap-pane -D"]="Swap Down"
+	["swap-pane -L"]="Swap Left"
+	["swap-pane -R"]="Swap Right"
+	["resize-pane -U"]="Resize Up"
+	["resize-pane -D"]="Resize Down"
+	["resize-pane -L"]="Resize Left"
+	["resize-pane -R"]="Resize Right"
+	["resize-pane -U 5"]="Resize Up 5"
+	["resize-pane -D 5"]="Resize Down 5"
+	["resize-pane -L 5"]="Resize Left 5"
+	["resize-pane -R 5"]="Resize Right 5"
+	["kill-pane"]="Kill Pane"
+	["last-pane"]="Last Pane"
+)
 
 # Iterate over the types of windows we want to create
 for window_type in "${window_types[@]}"; do
@@ -50,20 +77,36 @@ for window_type in "${window_types[@]}"; do
 			# Extract the command from the line
 			cmd=$(echo $line | awk '{for(i=1;i<=NF;i++) if($i ~ /bind-key/) {print substr($0, index($0,$(i+4))); exit}}')
 			# Iterate over the commands we're looking for
-			#for key in "${!commands[@]}"; do # Testing other option below
-			for key in $(echo "${!commands[@]}" | tr ' ' '\n' | awk '{ print length, $0 }' | sort -rn | cut -d' ' -f2-); do
-				# Check if the command starts with the key
-				if [[ $cmd == $key || $cmd == $key" "* ]]; then
-					# Get the title for the command
-					title=${commands[$key]}
-					# Handle special cases for the key binding
-					if [[ $bind == "\'" ]]; then
-						bind="'"
-					elif [[ $bind == "\"" ]]; then
-						bind="\""
+			for key in "${!commands[@]}"; do
+				# If the key contains a space
+				if [[ $key == *" "* ]]; then
+					# Check if the command exactly matches the key or if the command starts with the key followed by a space
+					if [[ $cmd == $key || $cmd =~ ^$key[[:space:]] ]]; then
+						# Get the title for the command
+						title=${commands[$key]}
+						# Handle special cases for the key binding
+						if [[ $bind == "\'" ]]; then
+							bind="'"
+						elif [[ $bind == "\"" ]]; then
+							bind="\""
+						fi
+						# Write the menu item to the script
+						echo "        \"$title\" \"$bind\" '$cmd' \\" >>$WITCH_KEY_MENUS_SH
 					fi
-					# Write the menu item to the script
-					echo "        \"$title\" \"$bind\" '$cmd' \\" >>$WITCH_KEY_MENUS_SH
+				else
+					# If the key doesn't contain a space, check if the command exactly matches the key
+					if [[ $cmd == $key ]]; then
+						# Get the title for the command
+						title=${commands[$key]}
+						# Handle special cases for the key binding
+						if [[ $bind == "\'" ]]; then
+							bind="'"
+						elif [[ $bind == "\"" ]]; then
+							bind="\""
+						fi
+						# Write the menu item to the script
+						echo "        \"$title\" \"$bind\" '$cmd' \\" >>$WITCH_KEY_MENUS_SH
+					fi
 				fi
 			done
 		fi
