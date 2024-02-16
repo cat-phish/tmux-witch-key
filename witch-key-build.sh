@@ -16,19 +16,29 @@ echo "" >>$WITCH_KEY_MENUS_SH
 # Declare an array of the types of windows we want to create
 declare -a window_types=("session" "window" "pane")
 
+# NOTE: for mapping commands. if the command should be mapped exactly do not include a space in the key, if the command has
+# possible arguments, include a space in the key and the command will be matched if it starts with the key followed by a space
+
 # Define the commands to look for and their corresponding titles for each window type
-declare -a session_commands=("new-session -s" "switch-client -n" "switch-client -p" "switch-client -l" "kill-session" "detach-client" "refresh-client")
+declare -a session_commands=("new-session" "switch-client -n" "switch-client -p" "switch-client -l" "rename-session" "show-messages" "suspend-client" "lock-client" "kill-server" "kill-session" "kill-session -a" "list-sessions" "detach-client" "refresh-client")
 declare -A session_titles=(
-	["new-session -s"]="New Session"
+	["new-session"]="New Session"
 	["switch-client -n"]="Next Session"
 	["switch-client -p"]="Prev Session"
 	["switch-client -l"]="Last Session"
+	["rename-session"]="Rename Session"
+	["show-messages"]="Show Messages"
+	["suspend-client"]="Suspend Client"
+	["lock-client"]="Lock Client"
+	["kill-server"]="Kill Server"
 	["kill-session"]="Kill Session"
+	["kill-session -a"]="Kill All Other Sessions"
+	["list-sessions"]="List Sessions"
 	["detach-client"]="Detach"
 	["refresh-client"]="Refresh"
 )
 
-declare -a window_commands=("next-window" "previous-window" "next-window -a" "previous-window -a" "split-window -h" "split-window -v")
+declare -a window_commands=("next-window" "previous-window" "next-window -a" "previous-window -a" "split-window -h" "split-window -v" "split-window -fh" "split-window -fv" "swap window -d -t -1" "swap window -d -t +1" "rotate-window" "rotate-window -D" "rotate-window -U" "rotate window -DZ" "rotate window -UZ" "new-window" "new-window -c" "rename-window" "list-windows" "respawn-window" "even-horizontal" "even-vertical" "main-horizontal" "main-vertical" "tiled")
 declare -A window_titles=(
 	["next-window"]="Next Window"
 	["previous-window"]="Prev Window"
@@ -36,14 +46,37 @@ declare -A window_titles=(
 	["previous-window -a"]="Prev (Alert)"
 	["split-window -h"]="Split (H)"
 	["split-window -v"]="Split (V)"
+	["split-window -fh"]="Split (Full H)"
+	["split-window -fv"]="Split (Full V)"
+	["swap window -d -t -1"]="Move Window (Left)"
+	["swap window -d -t +1"]="Move Window (Right)"
+	["rotate-window"]="Rotate Window"
+	["rotate-window -D"]="Rotate Window Down"
+	["rotate-window -U"]="Rotate Window Up"
+	["rotate window -DZ"]="Rotate Window Down (Keep Zoom)"
+	["rotate window -UZ"]="Rotate Window Up (Keep Zoom)"
+	["new-window"]="New Window"
+	["new-window -c"]="New Window (Current Dir)"
+	["rename-window"]="Rename Window"
+	["list-windows"]="List Windows"
+	["respawn-window"]="Respawn Window"
+	["even-horizontal"]="Even Horizontal Layout"
+	["even-vertical"]="Even Vertical Layout"
+	["main-horizontal"]="Main Horizontal Layout"
+	["main-vertical"]="Main Vertical Layout"
+	["tiled"]="Tiled Layout"
 )
 
-declare -a pane_commands=("select-pane -U" "select-pane -D" "select-pane -L" "select-pane -R" "swap-pane -U" "swap-pane -D" "swap-pane -L" "swap-pane -R" "resize-pane -U" "resize-pane -D" "resize-pane -L" "resize-pane -R" "resize-pane -U 5" "resize-pane -D 5" "resize-pane -L 5" "resize-pane -R 5" "kill-pane" "last-pane")
+declare -a pane_commands=("select-pane -U" "select-pane -D" "select-pane -L" "select-pane -R" "select-pane -UZ" "select-pane -DZ" "select-pane -LZ" "select-pane -RZ" "swap-pane -U" "swap-pane -D" "swap-pane -L" "swap-pane -R" "resize-pane -U" "resize-pane -D" "resize-pane -L" "resize-pane -R" "resize-pane -U 5" "resize-pane -D 5" "resize-pane -L 5" "resize-pane -R 5" "respawn-pane" "kill-pane" "last-pane" "break-pane" "break-pane -d")
 declare -A pane_titles=(
 	["select-pane -U"]="Switch Up"
 	["select-pane -D"]="Switch Down"
 	["select-pane -L"]="Switch Left"
 	["select-pane -R"]="Switch Right"
+	["select-pane -UZ"]="Switch Up (Keep Zoom)"
+	["select-pane -DZ"]="Switch Down (Keep Zoom)"
+	["select-pane -LZ"]="Switch Left (Keep Zoom)"
+	["select-pane -RZ"]="Switch Right (Keep Zoom)"
 	["swap-pane -U"]="Swap Up"
 	["swap-pane -D"]="Swap Down"
 	["swap-pane -L"]="Swap Left"
@@ -56,8 +89,11 @@ declare -A pane_titles=(
 	["resize-pane -D 5"]="Resize Down 5"
 	["resize-pane -L 5"]="Resize Left 5"
 	["resize-pane -R 5"]="Resize Right 5"
+	["respawn-pane"]="Respawn Pane"
 	["kill-pane"]="Kill Pane"
 	["last-pane"]="Last Pane"
+	["break-pane"]="Break Pane"
+	["break-pane -d"]="Break Pane (Detached)"
 )
 
 # Store the tmux list-keys output in an array
@@ -96,6 +132,10 @@ for window_type in "${window_types[@]}"; do
 							bind="'"
 						elif [[ $bind == "\"" ]]; then
 							bind="\""
+						elif [[ $bind == "\\{" ]]; then
+							bind="{"
+						elif [[ $bind == "\\}" ]]; then
+							bind="}"
 						fi
 						# Write the menu item to the script
 						echo "        \"$title\" \"$bind\" '$cmd' \\" >>$WITCH_KEY_MENUS_SH
@@ -110,6 +150,10 @@ for window_type in "${window_types[@]}"; do
 							bind="'"
 						elif [[ $bind == "\"" ]]; then
 							bind="\""
+						elif [[ $bind == "\\{" ]]; then
+							bind="{"
+						elif [[ $bind == "\\}" ]]; then
+							bind="}"
 						fi
 						# Write the menu item to the script
 						echo "        \"$title\" \"$bind\" '$cmd' \\" >>$WITCH_KEY_MENUS_SH
@@ -128,5 +172,5 @@ done
 # Make the new witch-key-menus.sh script executable
 chmod u+x $WITCH_KEY_MENUS_SH
 
-# Display a finished building message to the user
-tmux display-message "Witch-Key menus have finished building"
+# Display a message to the user
+tmux display-message "Witch-Key menus have finished building!"
