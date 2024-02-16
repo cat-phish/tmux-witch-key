@@ -68,6 +68,8 @@ for window_type in "${window_types[@]}"; do
 	echo "show_${window_type}_menu() {" >>$WITCH_KEY_MENUS_SH
 	echo "    tmux display-menu -T \"Witch-Key - ${window_type^}\" -x C -y S \\" >>$WITCH_KEY_MENUS_SH
 
+	echo "        \"Main Menu\" BackSpace '\"$CURRENT_DIR/witch-key.sh\"' \\" >>$WITCH_KEY_MENUS_SH
+
 	# Parse the tmux-keymaps.txt file
 	while IFS= read -r line; do
 		# Check if the line is a prefix key binding
