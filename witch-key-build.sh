@@ -14,7 +14,7 @@ echo "CURRENT_DIR=\"\$(cd \"\$(dirname \"\${BASH_SOURCE[0]}\")\" && pwd)\"" >>$W
 echo "" >>$WITCH_KEY_MENUS_SH
 
 # Declare an array of the types of windows we want to create
-declare -a window_types=("session" "window" "pane")
+declare -a window_types=("session" "window" "pane" "test")
 
 # NOTE: for mapping commands. if the command should be mapped exactly do not include a space in the key, if the command has
 # possible arguments, include a space in the key and the command will be matched if it starts with the key followed by a space
@@ -52,7 +52,6 @@ declare -A session_titles=(
 	["detach-client"]="Detach"
 	["refresh-client"]="Refresh"
 )
-
 declare -a window_commands=(
 	"next-window"
 	"previous-window"
@@ -163,6 +162,18 @@ declare -A pane_titles=(
 	["break-pane -d"]="Break Pane (Detached)"
 )
 
+declare -a test_commands=(
+	"list-buffers"
+	"command-prompt -I"
+	"run-shell \"/home/jordan/.config/tmux/plugins/tmux-pomodoro-plus/scripts/pomodoro.sh skip\""
+)
+
+declare -A test_titles=(
+	["list-buffers"]="List Buffers"
+	["command-prompt -I"]="Command Prompt"
+	["run-shell \"/home/jordan/.config/tmux/plugins/tmux-pomodoro-plus/scripts/pomodoro.sh skip\""]="Pomodoro Skip"
+)
+
 # Store the tmux list-keys output in an array
 mapfile -t tmux_keys <$TMUX_KEYMAPS
 
@@ -203,6 +214,14 @@ for window_type in "${window_types[@]}"; do
 							bind="{"
 						elif [[ $bind == "\\}" ]]; then
 							bind="}"
+						elif [[ $bind == "\~" ]]; then
+							bind="~"
+						elif [[ $bind == "\\%" ]]; then # TODO: fixt this
+							bind="%"
+						elif [[ $bind == "\#" ]]; then
+							bind="#"
+						elif [[ $bind == "\$" ]]; then
+							bind="$"
 						fi
 						# Write the menu item to the script
 						echo "        \"$title\" \"$bind\" '$cmd' \\" >>$WITCH_KEY_MENUS_SH
@@ -221,6 +240,14 @@ for window_type in "${window_types[@]}"; do
 							bind="{"
 						elif [[ $bind == "\\}" ]]; then
 							bind="}"
+						elif [[ $bind == "\~" ]]; then
+							bind="~"
+						elif [[ $bind == "\\%" ]]; then # TODO: fixt this
+							bind="%"
+						elif [[ $bind == "\#" ]]; then
+							bind="#"
+						elif [[ $bind == "\$" ]]; then
+							bind="$"
 						fi
 						# Write the menu item to the script
 						echo "        \"$title\" \"$bind\" '$cmd' \\" >>$WITCH_KEY_MENUS_SH
