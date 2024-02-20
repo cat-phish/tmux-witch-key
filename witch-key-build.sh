@@ -12,6 +12,7 @@ tmux_echo() {
 main() {
 	tmux_echo "Building Witch-Key Menus..."
 	tmux_echo "Please do not close until finished"
+	tmux_echo "Build can take a 1-2 minutes"
 
 	# Write the output of the tmux list-keys command to a file
 	tmux_echo ""
