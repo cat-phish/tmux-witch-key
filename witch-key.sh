@@ -7,6 +7,6 @@ tmux display-menu -T "Witch-Key" -x C -y S \
 	"Window" w "run -b 'source \"$CURRENT_DIR/witch-key-menus.sh\"; show_window_menu'" \
 	"Pane" p "run -b 'source \"$CURRENT_DIR/witch-key-menus.sh\"; show_pane_menu'" \
 	"" \
-	"Test Command" t "run -b 'source \"$CURRENT_DIR/witch-key-menus.sh\"; show_test_menu'" \
 	"Build Menu" B "run -b 'source \"$CURRENT_DIR/witch-key-build.sh\"'" \
 	"Close Menu" Escape ""
+# "Test Command" t "run -b 'source \"$CURRENT_DIR/witch-key-menus.sh\"; show_test_menu'"
