@@ -1,6 +1,6 @@
 # Tmux-Witch-Key
 
-***Tmux-Witch-Key is a work in progress***
+***Tmux-Witch-Key is a work in progress. Do not use if you're not willing to encounter some bugs. Major changes to the code and features may occur.***
 
 A Tmux plugin inspired by [whichkey.nvim](https://github.com/folke/which-key.nvim)
 to automatically show your mappings for the most common Tmux commands
